@@ -1,0 +1,62 @@
+.body{
+    background-color: #fbfbfb;
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.contentContainer{
+    height: calc(100dvh - 40px);
+    width: 100%;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.shortcutContainer{
+    height: 60%;
+    width: 50%;
+    background-color: #fbfbfb;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.shortcut{
+    width: 18%;
+    height: 130px;
+    border: 1px solid #e2e2e2;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+@media screen and (max-width: 800px) { 
+    .shortcutContainer{
+        height: 75%;
+        width: 90%;
+        background-color: #fbfbfb;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .shortcut{
+        width: 48%;
+        height: 130px;
+        border: 1px solid #e2e2e2;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+}
