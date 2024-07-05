@@ -8,11 +8,11 @@
     height: 100dvh;
 }
 
-.topRowContainer{
+.btnContainer{
     height: 40px;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: start;
     padding-left: 10px;
     align-items: center;
 }
@@ -28,8 +28,8 @@
 }
 
 .container{
-    width: calc(25% - 20px);
-    height: 400px;
+    width: calc(20% - 20px);
+    height: calc(50dvh - 40px);
     background-color: var(--divColor);
     padding: 10px;
     margin: 10px;
@@ -37,6 +37,8 @@
     border-radius: 5px;
     overflow: auto;
     scrollbar-width: none;
+    display: flex;
+    flex-direction: column; 
 }
 
 .containerHeader{
@@ -50,18 +52,20 @@
 .item{
     padding-left: 10px;
     margin: 5px;
-    height: 30px;
-    font-size: 14px;
+    height: 40px;
+    font-size: 15px;
     cursor: move;
     border-radius: 5px;
     background-color: var(--itemColor);
     opacity: var(--itemOpacity);
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     align-items: center;
 }
 
 .lastItem{
+    flex-grow: 1;
     padding-left: 10px;
     margin: 5px;
     line-height: 40px;
@@ -69,6 +73,25 @@
     background-color: lightgrey;
     opacity: 0;
     cursor: move;
+}
+
+.btnStyle{
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    margin-left: 2px;
+    margin-right: 2px;
+    height: 30px;
+    width: 30px;
+}
+
+.btnSmallStyle{
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    margin: 5px;
+    height: 30px;
+    width: 30px;
 }
 
 @media screen and (max-width: 800px) {

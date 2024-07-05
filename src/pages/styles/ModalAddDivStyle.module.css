@@ -1,0 +1,34 @@
+.formInputContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 5px;
+    width: 100%;  
+}
+
+.formLabel{
+    width: 30%;
+    text-align: right;
+    padding-right: 10px;
+    font-size: 14px;
+    color: #3f3f3f;
+}
+
+.formInput{
+    width: 70%;
+}
+
+@media screen and (max-width: 800px) {
+    .formInputContainer{
+        width: 100%;
+        text-align: left;
+    }
+
+    .formLabel{
+        width: 30%;
+    }
+
+    .formInput{
+        width: 70%;
+    }
+}

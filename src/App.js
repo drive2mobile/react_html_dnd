@@ -1,13 +1,13 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React from "react";
-import SeatingPlan from "./pages/SeatingPlan";
+import DndList from "./pages/DndList";
 
 function App() {
     return (
         <React.StrictMode>
-            <BrowserRouter basename="/seating_plan">
+            <BrowserRouter basename="/reactHtmlDnd">
             <Routes>
-                <Route exact path="/" element={<SeatingPlan />}></Route>
+                <Route exact path="/" element={<DndList />}></Route>
             </Routes>
             </BrowserRouter>
         </React.StrictMode>
