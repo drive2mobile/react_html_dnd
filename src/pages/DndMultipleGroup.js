@@ -5,12 +5,10 @@ import * as Icon from 'react-bootstrap-icons';
 import ModalAddDiv from "./ModalAddDiv";
 import ModalAddItem from "./ModalAddItem";
 
-const DndList = () => {
+const DndMultipleGroup = () => {
     const [dragItem, setDragItem] = useState(null);
     const [dragFromDiv, setDragFromDiv] = useState(null);
     const [dragFromIndex, setDragFromIndex] = useState(null);
-    const [dragToDiv, setDragToDiv] = useState(null);
-    const [dragToIndex, setDragToIndex] = useState(null);
     const [hoverDiv, setHoverDiv] = useState(null);
 
     const [showAddNewGroupModal, setShowAddNewGroupModal] = useState(false);
@@ -24,66 +22,69 @@ const DndList = () => {
         'Group4': [{ 'ItemName': '10K' }, { 'ItemName': '50K' }, { 'ItemName': '100K' }]
     });
 
-    function onDragStartItem(item, indexDiv, indexItem, event) {
+    function onDragStart(item, divKey, itemIndex, event) {
         setDragItem(item);
-        setDragFromDiv(indexDiv);
-        setDragFromIndex(indexItem);
+        setDragFromDiv(divKey);
+        setDragFromIndex(itemIndex);
 
         event.dataTransfer.effectAllowed = 'move';
         event.dataTransfer.setData('text/html', event.target.innerHTML);
     }
 
-    function onDragOverItem(indexDiv, indexItem, event) {
+    function onDragOver(divKey, itemIndex, event) {
         event.preventDefault();
-        setDragToDiv(indexDiv);
-        setDragToIndex(indexItem);
+
         if (dragItem === null) return;
 
-        if (dragFromDiv === indexDiv) {
+        if (dragFromDiv === divKey) {
             const sourceList = Array.from(dataList[dragFromDiv]);
-            const origItem = sourceList[indexItem];
+            const origItem = sourceList[itemIndex];
 
-            sourceList[dragFromIndex] = origItem;
-            sourceList[indexItem] = dragItem;
+            if (itemIndex == sourceList.length)
+            {
+                sourceList[dragFromIndex] = origItem;
+                sourceList[sourceList.length-1] = dragItem;
+                setDragFromIndex(sourceList.length-1);
+            }
+            else
+            {
+                sourceList[dragFromIndex] = origItem;
+                sourceList[itemIndex] = dragItem;
+                setDragFromIndex(itemIndex);
+            }
 
             setDataList({ ...dataList, [dragFromDiv]: sourceList });
         }
-        else if (dragFromDiv !== indexDiv) {
+        else if (dragFromDiv !== divKey) {
             const sourceList = Array.from(dataList[dragFromDiv]);
-            const targetList = Array.from(dataList[indexDiv]);
+            const targetList = Array.from(dataList[divKey]);
 
-            sourceList.splice(dragFromIndex, 1);
-            targetList.splice(indexItem, 0, dragItem);
-
-            setDataList({ ...dataList, [dragFromDiv]: sourceList, [indexDiv]: targetList });
+            if (itemIndex == targetList.length)
+            {
+                sourceList.splice(dragFromIndex, 1);
+                targetList.push(dragItem);
+                setDragFromIndex(itemIndex);
+            }
+            else
+            {
+                sourceList.splice(dragFromIndex, 1);
+                targetList.splice(itemIndex, 0, dragItem);
+                setDragFromIndex(itemIndex);
+            }
+            
+            setDataList({ ...dataList, [dragFromDiv]: sourceList, [divKey]: targetList });
         }
 
-        setDragFromDiv(indexDiv);
-        setDragFromIndex(indexItem);
-        setHoverDiv(indexDiv);
+        setDragFromDiv(divKey);
+        setHoverDiv(divKey);
     }
 
-    function onDropDiv() {
-        console.log(`bench id: ${dragToDiv}`);
-        console.log(`seat no: ${dragToIndex}`)
-
-        setDragItem(null);
-        setDragFromDiv(null);
-        setDragFromIndex(null);
-        setHoverDiv(null);
-        setDragToDiv(null);
-        setDragToIndex(null);
-    }
-
-    function onDragLeave()
+    function onDropDiv() 
     {
         setDragItem(null);
         setDragFromDiv(null);
         setDragFromIndex(null);
         setHoverDiv(null);
-        setDragToDiv(null);
-        setDragToIndex(null);
-        console.log('end')
     }
 
     function deleteDiv(key)
@@ -111,17 +112,17 @@ const DndList = () => {
             <ModalAddItem showModal={showAddNewItemModal} setShowModal={setShowAddNewItemModal} dataList={dataList} setDataList={setDataList} groupName={selectedGroupName}/>
 
             <div className={styles.btnContainer}>
-                <Button size='sm' onClick={()=>{setShowAddNewGroupModal(true)}}>Add Group</Button>
+                <span style={{fontSize:'22px'}}>DND Multiple Group</span>
+                <Button size='sm' style={{marginLeft:'5px'}} onClick={()=>{setShowAddNewGroupModal(true)}}>Add Group</Button>
             </div>
 
             <div className={styles.divContainer}>
-                {Object.entries(dataList).map(([divKey, divItems]) => (
+                {Object.entries(dataList).map(([divKey, items]) => (
                     // RENDER ALL DIV CONTAINERS
-                    <Fade in={true} appear={true} style={{transitionDuration: '0.3s'}} className={styles.container} style={{'--divColor':hoverDiv == divKey ? '#EFF9FE' : '#F0F0F0'}}>
+                    <Fade in={true} appear={true} style={{transitionDuration: '0.3s', '--divColor':hoverDiv == divKey ? '#EFF9FE' : '#F0F0F0'}} className={styles.container}>
                         <div
                             key={divKey}
                             onDrop={() => { onDropDiv() }}
-                            onDragEnd={() => { onDragLeave() }}
                         >
                             {/* DIV HEADER */}
                             <div className={styles.containerHeader}>
@@ -149,19 +150,19 @@ const DndList = () => {
                             </div>
 
                             {/* DIV ITEMS */}
-                            {divItems.length > 0 && divItems.map((item, itemIndex) => (
+                            {items.length > 0 && items.map((item, itemIndex) => (
                                 <div
                                     key={itemIndex}
                                     draggable={true}
-                                    onDragStart={(e) => { onDragStartItem(item, divKey, itemIndex, e) }}
-                                    onDragOver={(e) => { onDragOverItem(divKey, itemIndex, e) }}
+                                    onDragStart={(e) => { onDragStart(item, divKey, itemIndex, e) }}
+                                    onDragOver={(e) => { onDragOver(divKey, itemIndex, e) }}
                                     className={styles.item}
                                     style={{
                                         '--itemColor': dragItem === item && dragFromDiv === divKey ? 'lightgreen' : '#B9DEFC',
                                         '--itemOpacity': dragItem === item && dragFromDiv === divKey ? '1' : '1',
                                     }}
                                 >
-                                    <div style={{ width: '80%' }}>
+                                    <div>
                                         {`${itemIndex + 1}. ${item["ItemName"]}`}
                                     </div>
                                     <Button 
@@ -176,8 +177,8 @@ const DndList = () => {
                             ))}
                             <div 
                                 className={styles.lastItem}
-                                key={divItems.length}
-                                onDragOver={(e) => { onDragOverItem(divKey, divItems.length - 1, e) }}
+                                key={items.length}
+                                onDragOver={(e) => { onDragOver(divKey, items.length, e) }}
                             >
                             </div>
                         </div>
@@ -188,4 +189,4 @@ const DndList = () => {
     )
 }
 
-export default DndList;
+export default DndMultipleGroup;
