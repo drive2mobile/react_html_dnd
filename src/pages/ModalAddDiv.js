@@ -2,21 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import styles from './styles/ModalAddDivStyle.module.css';
 
-const ModalAddDiv = ({ showModal, setShowModal, dataList, setDataList }) => {
-    const [groupName, setGroupName] = useState('');
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
-        if (groupName != '' && (groupName in dataList == false))
-        {
-            const newDataList = {...dataList};
-            newDataList[groupName] = [];
-            setDataList(newDataList);
-            setGroupName('');
-            setShowModal(false);
-        }
-    }
+const ModalAddDiv = ({ showModal, setShowModal, inputValue, setIputValue, confirmFunction }) => {
 
     return (
         <Modal show={showModal} aria-labelledby="contained-modal-title-vcenter" centered>
@@ -29,17 +15,17 @@ const ModalAddDiv = ({ showModal, setShowModal, dataList, setDataList }) => {
                     type="text" 
                     size='sm' 
                     placeholder={'Group Name'} 
-                    value={groupName} 
-                    onChange={(event) => {setGroupName(event.target.value);}} 
-                    id='groupName'
+                    value={inputValue} 
+                    onChange={(event) => {setIputValue(event.target.value);}} 
+                    id='inputValue'
                 />
             </div>
 
             <Modal.Footer>
-                <Button variant="secondary" size='sm' onClick={() => {setShowModal(false); setGroupName(''); }}>
+                <Button variant="secondary" size='sm' onClick={() => {setShowModal(false); setIputValue(''); }}>
                     Cancel
                 </Button>
-                <Button size='sm' onClick={handleSubmit}>
+                <Button size='sm' onClick={confirmFunction}>
                     Confirm
                 </Button>
             </Modal.Footer>

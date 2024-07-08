@@ -2,22 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import styles from './styles/ModalAddItemStyle.module.css';
 
-const ModalAddItem = ({ showModal, setShowModal, dataList, setDataList, groupName }) => {
-    const [itemName, setItemName] = useState('');
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
-        if (itemName != '' && (itemName in dataList != true))
-        {
-            const newDataList = {...dataList};
-            newDataList[groupName].push({'ItemName':itemName});
-            setDataList(newDataList);
-            setItemName('');
-            setShowModal(false);
-        }
-    }
-
+const ModalAddItem = ({ showModal, setShowModal, inputValue, setIputValue, confirmFunction }) => {
     return (
         <Modal show={showModal} aria-labelledby="contained-modal-title-vcenter" centered>
             <Modal.Body>Add New Item</Modal.Body>
@@ -29,17 +14,17 @@ const ModalAddItem = ({ showModal, setShowModal, dataList, setDataList, groupNam
                     type="text" 
                     size='sm' 
                     placeholder={'Item Name'} 
-                    value={itemName} 
-                    onChange={(event) => {setItemName(event.target.value);}} 
-                    id='itemName'
+                    value={inputValue} 
+                    onChange={(event) => {setIputValue(event.target.value);}} 
+                    id='inputValue'
                 />
             </div>
 
             <Modal.Footer>
-                <Button variant="secondary" size='sm' onClick={() => {setShowModal(false); setItemName(''); }}>
+                <Button variant="secondary" size='sm' onClick={() => {setShowModal(false); setIputValue(''); }}>
                     Cancel
                 </Button>
-                <Button size='sm' onClick={handleSubmit}>
+                <Button size='sm' onClick={confirmFunction}>
                     Confirm
                 </Button>
             </Modal.Footer>

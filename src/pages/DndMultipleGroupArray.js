@@ -5,7 +5,7 @@ import * as Icon from 'react-bootstrap-icons';
 import ModalAddDiv from "./ModalAddDiv";
 import ModalAddItem from "./ModalAddItem";
 
-const DndMultipleGroup = () => {
+const DndMultipleGroupArray = () => {
     const [dragItem, setDragItem] = useState(null);
     const [dragFromDiv, setDragFromDiv] = useState(null);
     const [dragFromIndex, setDragFromIndex] = useState(null);
@@ -15,12 +15,14 @@ const DndMultipleGroup = () => {
     const [showAddNewItemModal, setShowAddNewItemModal] = useState(false);
     const [selectedGroupName, setSelectedGroupName] = useState('');
 
-    const [dataList, setDataList] = useState({
-        'Group1': [{ 'ItemName': 'iPhone' }, { 'ItemName': 'iPad' }, { 'ItemName': 'MacBook' }],
-        'Group2': [{ 'ItemName': 'Galaxy S24' }, { 'ItemName': 'Galaxy Tab' }, { 'ItemName': 'Galaxy Book' }],
-        'Group3': [{ 'ItemName': 'Mercedes' }, { 'ItemName': 'BMW' }, { 'ItemName': 'Audi' }],
-        'Group4': [{ 'ItemName': '10K' }, { 'ItemName': '50K' }, { 'ItemName': '100K' }]
-    });
+    const [inputValue, setInputValue] = useState('');
+
+    const [dataList, setDataList] = useState([
+        [{ 'ItemName': 'iPhone' }, { 'ItemName': 'iPad' }, { 'ItemName': 'MacBook' }],
+        [{ 'ItemName': 'Galaxy S24' }, { 'ItemName': 'Galaxy Tab' }, { 'ItemName': 'Galaxy Book' }],
+        [{ 'ItemName': 'Mercedes' }, { 'ItemName': 'BMW' }, { 'ItemName': 'Audi' }],
+        [{ 'ItemName': '10K' }, { 'ItemName': '50K' }, { 'ItemName': '100K' }]
+    ]);
 
     function onDragStart(item, divKey, itemIndex, event) {
         setDragItem(item);
@@ -37,7 +39,7 @@ const DndMultipleGroup = () => {
         if (dragItem === null) return;
 
         if (dragFromDiv === divKey) {
-            const sourceList = Array.from(dataList[dragFromDiv]);
+            const sourceList = dataList[dragFromDiv];
             const origItem = sourceList[itemIndex];
 
             if (itemIndex == sourceList.length)
@@ -53,11 +55,13 @@ const DndMultipleGroup = () => {
                 setDragFromIndex(itemIndex);
             }
 
-            setDataList({ ...dataList, [dragFromDiv]: sourceList });
+            const newDataList = [...dataList];
+            newDataList[dragFromDiv] = sourceList;
+            setDataList(newDataList);
         }
         else if (dragFromDiv !== divKey) {
-            const sourceList = Array.from(dataList[dragFromDiv]);
-            const targetList = Array.from(dataList[divKey]);
+            const sourceList = dataList[dragFromDiv];
+            const targetList = dataList[divKey];
 
             if (itemIndex == targetList.length)
             {
@@ -72,7 +76,10 @@ const DndMultipleGroup = () => {
                 setDragFromIndex(itemIndex);
             }
             
-            setDataList({ ...dataList, [dragFromDiv]: sourceList, [divKey]: targetList });
+            const newDataList = [...dataList];
+            newDataList[dragFromDiv] = sourceList;
+            newDataList[divKey] = targetList;
+            setDataList(newDataList);
         }
 
         setDragFromDiv(divKey);
@@ -89,16 +96,14 @@ const DndMultipleGroup = () => {
 
     function deleteDiv(key)
     {
-        setDataList(prevList => {
-            const updatedList = { ...prevList };
-            delete updatedList[key];
-            return updatedList;
-          });
+        const newDataList = [...dataList];
+        newDataList.splice(key, 1);
+        setDataList(newDataList);
     }
 
     function deleteItem(divKey, itemIndex)
     {
-        const newDataList = {...dataList};
+        const newDataList = [...dataList];
         const oldArray = newDataList[divKey];
         oldArray.splice(itemIndex, 1);
 
@@ -106,18 +111,50 @@ const DndMultipleGroup = () => {
         setDataList(newDataList);
     }
 
+    function addDiv()
+    {
+        const newDataList = [...dataList];
+        const newArray = [];
+        newDataList.push(newArray);
+        setDataList(newDataList);
+        setInputValue('');
+        setShowAddNewGroupModal(false);
+    }
+
+    function addItem()
+    {
+        const newDataList = [...dataList];
+        newDataList[selectedGroupName].push({ 'ItemName': inputValue });
+        setDataList(newDataList);
+        setInputValue('');
+        setShowAddNewItemModal(false);
+    }
+
     return (
         <div className={styles.body}>
-            <ModalAddDiv showModal={showAddNewGroupModal} setShowModal={setShowAddNewGroupModal} dataList={dataList} setDataList={setDataList}/>
-            <ModalAddItem showModal={showAddNewItemModal} setShowModal={setShowAddNewItemModal} dataList={dataList} setDataList={setDataList} groupName={selectedGroupName}/>
+            <ModalAddDiv 
+                showModal={showAddNewGroupModal} 
+                setShowModal={setShowAddNewGroupModal} 
+                inputValue={inputValue} 
+                setIputValue={setInputValue} 
+                confirmFunction={addDiv} 
+            />
+
+            <ModalAddItem 
+                showModal={showAddNewItemModal} 
+                setShowModal={setShowAddNewItemModal} 
+                inputValue={inputValue} 
+                setIputValue={setInputValue} 
+                confirmFunction={addItem} 
+            />
 
             <div className={styles.btnContainer}>
-                <span style={{fontSize:'22px'}}>DND Multiple Group</span>
+                <span style={{fontSize:'22px'}}>DND Multiple Group - Array</span>
                 <Button size='sm' style={{marginLeft:'5px'}} onClick={()=>{setShowAddNewGroupModal(true)}}>Add Group</Button>
             </div>
 
             <div className={styles.divContainer}>
-                {Object.entries(dataList).map(([divKey, items]) => (
+                {dataList.map((items, divKey) => (
                     // RENDER ALL DIV CONTAINERS
                     <Fade in={true} appear={true} style={{transitionDuration: '0.3s', '--divColor':hoverDiv == divKey ? '#EFF9FE' : '#F0F0F0'}} className={styles.container}>
                         <div
@@ -189,4 +226,4 @@ const DndMultipleGroup = () => {
     )
 }
 
-export default DndMultipleGroup;
+export default DndMultipleGroupArray;
