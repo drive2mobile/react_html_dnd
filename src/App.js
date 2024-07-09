@@ -9,7 +9,7 @@ import DndMultipleGroupArrayFixSlot from "./pages/DndMultipleGroupArrayFixSlot";
 function App() {
     return (
         <React.StrictMode>
-            <BrowserRouter basename="/reactHtmlDnd">
+            <BrowserRouter basename="/">
             <Routes>
                 <Route exact path="/multipleGroupArray" element={<DndMultipleGroupArray />}></Route>
                 <Route exact path="/multipleGroupArrayFixSlot" element={<DndMultipleGroupArrayFixSlot />}></Route>
