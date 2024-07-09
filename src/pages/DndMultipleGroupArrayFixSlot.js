@@ -4,8 +4,9 @@ import { Button, Fade } from "react-bootstrap";
 import * as Icon from 'react-bootstrap-icons';
 import ModalAddDiv from "./ModalAddDiv";
 import ModalAddItem from "./ModalAddItem";
+import NavMenu from "./NavMenu";
 
-const DndSingleGroup = () => {
+const DndMultipleGroupArrayFixSlot = () => {
     const [dragItem, setDragItem] = useState(null);
     const [dragFromDiv, setDragFromDiv] = useState(null);
     const [dragFromIndex, setDragFromIndex] = useState(null);
@@ -15,12 +16,14 @@ const DndSingleGroup = () => {
     const [showAddNewItemModal, setShowAddNewItemModal] = useState(false);
     const [selectedGroupName, setSelectedGroupName] = useState('');
 
-    const [dataList, setDataList] = useState({
-        'Group1': [{ 'ItemName': 'iPhone' }, { 'ItemName': 'iPad' }, { 'ItemName': 'MacBook' }],
-        'Group2': [{ 'ItemName': 'Galaxy S24' }, { 'ItemName': 'Galaxy Tab' }, { 'ItemName': 'Galaxy Book' }],
-        'Group3': [{ 'ItemName': 'Mercedes' }, { 'ItemName': 'BMW' }, { 'ItemName': 'Audi' }],
-        'Group4': [{ 'ItemName': '10K' }, { 'ItemName': '50K' }, { 'ItemName': '100K' }]
-    });
+    const [inputValue, setInputValue] = useState('');
+
+    const [dataList, setDataList] = useState([
+        [{ 'ItemName': 'iPhone' }, { 'ItemName': 'iPad' }, { 'ItemName': 'MacBook' }, { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }],
+        [{ 'ItemName': 'Galaxy S24' }, { 'ItemName': 'Galaxy Tab' }, { 'ItemName': 'Galaxy Book' }, { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }],
+        [{ 'ItemName': 'Mercedes' }, { 'ItemName': 'BMW' }, { 'ItemName': 'Audi' }, { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }],
+        [{ 'ItemName': '10K' }, { 'ItemName': '50K' }, { 'ItemName': '100K' }, { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }]
+    ]);
 
     function onDragStart(item, divKey, itemIndex, event) {
         setDragItem(item);
@@ -33,53 +36,29 @@ const DndSingleGroup = () => {
 
     function onDragOver(divKey, itemIndex, event) {
         event.preventDefault();
-
         if (dragItem === null) return;
 
         if (dragFromDiv === divKey) {
-            const sourceList = Array.from(dataList[dragFromDiv]);
-            const origItem = sourceList[itemIndex];
+            const newDataList = [...dataList];
+            newDataList[dragFromDiv][dragFromIndex] = dataList[dragFromDiv][itemIndex];
+            newDataList[dragFromDiv][itemIndex] = dragItem;
 
-            if (itemIndex == sourceList.length)
-            {
-                sourceList[dragFromIndex] = origItem;
-                sourceList[sourceList.length-1] = dragItem;
-                setDragFromIndex(sourceList.length-1);
-            }
-            else
-            {
-                sourceList[dragFromIndex] = origItem;
-                sourceList[itemIndex] = dragItem;
-                setDragFromIndex(itemIndex);
-            }
-
-            setDataList({ ...dataList, [dragFromDiv]: sourceList });
+            setDataList(newDataList);
         }
         else if (dragFromDiv !== divKey) {
-            const sourceList = Array.from(dataList[dragFromDiv]);
-            const targetList = Array.from(dataList[divKey]);
-
-            if (itemIndex == targetList.length)
-            {
-                sourceList.splice(dragFromIndex, 1);
-                targetList.push(dragItem);
-                setDragFromIndex(itemIndex);
-            }
-            else
-            {
-                sourceList.splice(dragFromIndex, 1);
-                targetList.splice(itemIndex, 0, dragItem);
-                setDragFromIndex(itemIndex);
-            }
+            const newDataList = [...dataList];
+            newDataList[dragFromDiv][dragFromIndex] = { 'ItemName': '-' };
+            newDataList[divKey][itemIndex] = dragItem;
             
-            setDataList({ ...dataList, [dragFromDiv]: sourceList, [divKey]: targetList });
+            setDataList(newDataList);
         }
 
+        setDragFromIndex(itemIndex);
         setDragFromDiv(divKey);
         setHoverDiv(divKey);
     }
 
-    function onDropDiv() 
+    function onDragEnd() 
     {
         setDragItem(null);
         setDragFromDiv(null);
@@ -89,39 +68,78 @@ const DndSingleGroup = () => {
 
     function deleteDiv(key)
     {
-        setDataList(prevList => {
-            const updatedList = { ...prevList };
-            delete updatedList[key];
-            return updatedList;
-          });
+        const newDataList = [...dataList];
+        delete newDataList[key];
+        setDataList(newDataList);
     }
 
     function deleteItem(divKey, itemIndex)
     {
-        const newDataList = {...dataList};
-        const oldArray = newDataList[divKey];
-        oldArray.splice(itemIndex, 1);
-
-        newDataList[divKey] = oldArray;
+        const newDataList = [...dataList];
+        newDataList[divKey][itemIndex] = {'ItemName':'-'};
         setDataList(newDataList);
+    }
+
+    function addDiv()
+    {
+        if (inputValue in dataList == false && inputValue != '')
+        {
+            const newDataList = [...dataList];
+            newDataList.push([{ 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }, 
+                { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }, { 'ItemName': '-' }]);
+
+            setDataList(newDataList);
+            setInputValue('');
+            setShowAddNewGroupModal(false);
+        }
+    }
+
+    function addItem()
+    {
+        const newDataList = [...dataList];
+        
+        for (var i=0 ; i<newDataList[selectedGroupName].length ; i++)
+        {
+            if (newDataList[selectedGroupName][i]['ItemName'] == '-')
+            {
+                newDataList[selectedGroupName][i] = {'ItemName':inputValue};
+                break;
+            }
+        }
+
+        setDataList(newDataList);
+        setInputValue('');
+        setShowAddNewItemModal(false);
     }
 
     return (
         <div className={styles.body}>
-            <ModalAddDiv showModal={showAddNewGroupModal} setShowModal={setShowAddNewGroupModal} dataList={dataList} setDataList={setDataList}/>
-            <ModalAddItem showModal={showAddNewItemModal} setShowModal={setShowAddNewItemModal} dataList={dataList} setDataList={setDataList} groupName={selectedGroupName}/>
+            <ModalAddDiv 
+                showModal={showAddNewGroupModal} 
+                setShowModal={setShowAddNewGroupModal} 
+                inputValue={inputValue} 
+                setIputValue={setInputValue} 
+                confirmFunction={addDiv} 
+            />
 
+            <ModalAddItem 
+                showModal={showAddNewItemModal} 
+                setShowModal={setShowAddNewItemModal} 
+                inputValue={inputValue} 
+                setIputValue={setInputValue} 
+                confirmFunction={addItem} 
+            />
             <div className={styles.btnContainer}>
-                <Button size='sm' onClick={()=>{setShowAddNewGroupModal(true)}}>Add Group</Button>
+                <NavMenu selectedPage={'DND Multiple Group Fix Slot - Array'}/>
+                <Button size='sm' style={{marginLeft:'5px'}} onClick={()=>{setShowAddNewGroupModal(true)}}>Add Group</Button>
             </div>
 
             <div className={styles.divContainer}>
-                {Object.entries(dataList).map(([divKey, items]) => (
+                {dataList.map((items, divKey) => (
                     // RENDER ALL DIV CONTAINERS
                     <Fade in={true} appear={true} style={{transitionDuration: '0.3s', '--divColor':hoverDiv == divKey ? '#EFF9FE' : '#F0F0F0'}} className={styles.container}>
                         <div
                             key={divKey}
-                            onDrop={() => { onDropDiv() }}
                         >
                             {/* DIV HEADER */}
                             <div className={styles.containerHeader}>
@@ -152,12 +170,13 @@ const DndSingleGroup = () => {
                             {items.length > 0 && items.map((item, itemIndex) => (
                                 <div
                                     key={itemIndex}
-                                    draggable={true}
-                                    onDragStart={(e) => { onDragStart(item, divKey, itemIndex, e) }}
-                                    onDragOver={(e) => { onDragOver(divKey, itemIndex, e) }}
+                                    draggable={item["ItemName"] != '-'}
+                                    onDragStart={(e) => {item["ItemName"] != '-' && onDragStart(item, divKey, itemIndex, e) }}
+                                    onDragOver={(e) => { item["ItemName"] == '-' && onDragOver(divKey, itemIndex, e) }}
+                                    onDragEnd={(e) => {onDragEnd()}}
                                     className={styles.item}
                                     style={{
-                                        '--itemColor': dragItem === item && dragFromDiv === divKey ? 'lightgreen' : '#B9DEFC',
+                                        '--itemColor': dragItem === item && dragFromDiv === divKey ? 'lightgreen' : (item["ItemName"] == '-' ? '#E2E2E2' : '#B9DEFC'),
                                         '--itemOpacity': dragItem === item && dragFromDiv === divKey ? '1' : '1',
                                     }}
                                 >
@@ -174,12 +193,6 @@ const DndSingleGroup = () => {
                                     </Button>
                                 </div>
                             ))}
-                            <div 
-                                className={styles.lastItem}
-                                key={items.length}
-                                onDragOver={(e) => { onDragOver(divKey, items.length, e) }}
-                            >
-                            </div>
                         </div>
                     </Fade>
                 ))}
@@ -188,4 +201,4 @@ const DndSingleGroup = () => {
     )
 }
 
-export default DndSingleGroup;
+export default DndMultipleGroupArrayFixSlot;
