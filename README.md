@@ -2,6 +2,9 @@
 
 This repository contains a React application that demonstrates the capabilities of HTML's drag and drop API. The application allows users to reorder or relocate the items on the same or different containers by interactively drag and drop. No third party library is needed.
 
+![Alt Text](fixslot.gif)
+![Alt Text](flexible.gif)
+
 ## Live Demo
 <https://react-html-dnd.vercel.app/multipleGroupArray>
 
