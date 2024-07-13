@@ -4,6 +4,7 @@ import { Button, Fade } from "react-bootstrap";
 import * as Icon from 'react-bootstrap-icons';
 import ModalAddDiv from "./ModalAddDiv";
 import ModalAddItem from "./ModalAddItem";
+import NavMenu from "./NavMenu";
 
 const DndMultipleGroupObject = () => {
     const [dragItem, setDragItem] = useState(null);
@@ -119,8 +120,8 @@ const DndMultipleGroupObject = () => {
 
     function addItem()
     {
-        const newDataList = [...dataList];
-        newDataList[selectedGroupName].push({ 'ItemName': inputValue });
+        const newDataList = {...dataList};
+        newDataList[selectedGroupName].push({'ItemName':inputValue});
         setDataList(newDataList);
         setInputValue('');
         setShowAddNewItemModal(false);
@@ -144,7 +145,7 @@ const DndMultipleGroupObject = () => {
                 confirmFunction={addItem} 
             />
             <div className={styles.btnContainer}>
-                <span style={{fontSize:'22px'}}>DND Multiple Group - Object</span>
+                <NavMenu selectedPage={'DND Multiple Group - Object'}/>
                 <Button size='sm' style={{marginLeft:'5px'}} onClick={()=>{setShowAddNewGroupModal(true)}}>Add Group</Button>
             </div>
 
